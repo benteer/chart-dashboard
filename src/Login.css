@@ -1,0 +1,142 @@
+/* Overall layout for the container */
+.login-container {
+    display: flex;
+    height: 100vh;
+    background: #f4f7fa; /* Light background color */
+  }
+  
+  /* Sidebar styles */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px; /* Initially hidden off-screen */
+    width: 280px;
+    height: 100%;
+    background: linear-gradient(135deg, #6c5ce7, #00b894); /* Gradient background */
+    color: white;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 4px 0px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    z-index: 100;
+  }
+  
+  .sidebar.open {
+    left: 0; /* Slide in when open */
+  }
+  
+  .sidebar-header {
+    font-size: 24px;
+    font-weight: bold;
+
+    margin-bottom: 20px;
+  }
+  
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .sidebar-item {
+    padding: 14px 20px;
+    margin: 10px 0;
+    border-radius: 8px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease;
+  }
+  
+  .sidebar-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(10px); /* Slight movement on hover */
+  }
+  
+  /* Content area styles */
+  .content {
+    flex: 1;
+    padding: 20px;
+    margin-left: 280px; /* Space for sidebar */
+    transition: margin-left 0.3s ease;
+  }
+  
+  .content .main-content {
+    padding: 40px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 50px;
+    display: flex;
+    gap: 2.5rem;
+
+  }
+  
+  .content .main-content h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #333;
+  }
+
+  
+  .content .main-content p {
+    font-size: 18px;
+    color: #666;
+  }
+
+  .content .main-content2{
+    padding: 40px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 50px;
+    display: flex;
+    gap: 2.5rem;
+
+  }
+  
+  /* Button to toggle sidebar */
+  .sidebar-toggle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    padding: 12px 18px;
+    background-color: #00b894;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    transition: background-color 0.3s ease;
+  }
+  
+  .sidebar-toggle:hover {
+    background-color: #6c5ce7;
+    transform: scale(1.1);
+  }
+  
+  .sidebar-toggle:focus {
+    outline: none;
+  }
+  
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 100%; /* Full width for smaller screens */
+      left: -100%; /* Initially hidden */
+    }
+  
+    .sidebar.open {
+      left: 0; /* Slide in */
+    }
+  
+    .content {
+      margin-left: 0; /* No offset on smaller screens */
+    }
+  
+    .sidebar-toggle {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+    }
+  }
+  
+  
