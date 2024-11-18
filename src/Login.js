@@ -1,193 +1,131 @@
-import React, { useState, useRef } from 'react';
-import './Login.css'; // Import custom CSS
-import { PieChart, Pie, Tooltip, Cell, Legend } from 'recharts';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as BarTooltip, Legend as BarLegend } from 'recharts';
-import { LineChart, Line } from 'recharts'; 
-import { PDFExport, savePDF } from "@progress/kendo-react-pdf";
-import { TfiAlignJustify } from "react-icons/tfi";
-import CanvasJSReact from '@canvasjs/react-charts';
-import { FaRegFilePdf } from "react-icons/fa";
+mport React, { useState, useEffect } from 'react';
+import {
+  PieChart, Pie, Tooltip, Cell, Legend,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer
+} from 'recharts';
+import {
+  LineChart, Line
+} from 'recharts';
 
-const CanvasJSChart = CanvasJSReact.CanvasJSChart;
-
-const pieData = [
-  { name: 'Category A', value: 400 },
-  { name: 'Category B', value: 300 },
-  { name: 'Category C', value: 300 },
-  { name: 'Category D', value: 200 },
-];
-
-const pieColors = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
-
-const barData = [
-  { name: 'Jan', uv: 4000, pv: 2400, amt: 2400 },
-  { name: 'Feb', uv: 3000, pv: 1398, amt: 2210 },
-  { name: 'Mar', uv: 2000, pv: 9800, amt: 2290 },
-  { name: 'Apr', uv: 2780, pv: 3908, amt: 2000 },
-  { name: 'May', uv: 1890, pv: 4800, amt: 2181 },
-  { name: 'Jun', uv: 2390, pv: 3800, amt: 2500 },
-  { name: 'Jul', uv: 3490, pv: 4300, amt: 2100 },
-];
-
-const lineData = [
-  { name: 'Jan', value: 4000 },
-  { name: 'Feb', value: 3200 },
-  { name: 'Mar', value: 2800 },
-  { name: 'Apr', value: 3500 },
-  { name: 'May', value: 4200 },
-  { name: 'Jun', value: 4600 },
-  { name: 'Jul', value: 4900 },
-];
-
-const options = {
-  animationEnabled: true,
-  title: {
-    text: "Number of New Customers",
-  },
-  axisY: {
-    title: "Number of Customers",
-  },
-  toolTip: {
-    shared: true,
-  },
-  data: [
+const PieChartComponent = () => {
+  // Sample raw data (you will likely fetch this data from an API in a real-world scenario)
+  const rawData = [
     {
-      type: "spline",
-      name: "2016",
-      showInLegend: true,
-      dataPoints: [
-        { y: 155, label: "Jan" },
-        { y: 150, label: "Feb" },
-        { y: 152, label: "Mar" },
-        { y: 148, label: "Apr" },
-        { y: 142, label: "May" },
-        { y: 150, label: "Jun" },
-        { y: 146, label: "Jul" },
-        { y: 149, label: "Aug" },
-        { y: 153, label: "Sept" },
-        { y: 158, label: "Oct" },
-        { y: 154, label: "Nov" },
-        { y: 150, label: "Dec" },
-      ],
+      ActivityStatusValue: "Success",
+      Caller: "samik.n.roy@gmail.com",
+      ResourceProviderValue: "MICROSOFT.WEB",
+      SubscriptionId: "fcb7d51b-418f-45a9-8418-5c0f17e343c8",
+      TimeGenerated: "2024-11-13T07:20:06.8976481Z",
     },
     {
-      type: "spline",
-      name: "2017",
-      showInLegend: true,
-      dataPoints: [
-        { y: 172, label: "Jan" },
-        { y: 173, label: "Feb" },
-        { y: 175, label: "Mar" },
-        { y: 172, label: "Apr" },
-        { y: 162, label: "May" },
-        { y: 165, label: "Jun" },
-        { y: 172, label: "Jul" },
-        { y: 168, label: "Aug" },
-        { y: 175, label: "Sept" },
-        { y: 170, label: "Oct" },
-        { y: 165, label: "Nov" },
-        { y: 169, label: "Dec" },
-      ],
+      ActivityStatusValue: "Success",
+      Caller: "someone.else@example.com",
+      ResourceProviderValue: "MICROSOFT.WEB",
+      SubscriptionId: "fcb7d51b-418f-45a9-8418-5c0f17e343c8",
+      TimeGenerated: "2024-11-13T07:21:06.8976481Z",
     },
-  ],
-};
+    {
+      ActivityStatusValue: "Failure",
+      Caller: "samik.n.roy@gmail.com",
+      ResourceProviderValue: "MICROSOFT.WEB",
+      SubscriptionId: "fcb7d51b-418f-45a9-8418-5c0f17e343c8",
+      TimeGenerated: "2024-11-13T07:22:06.8976481Z",
+    },
+    {
+      ActivityStatusValue: "Success",
+      Caller: "samik.n.roy@gmail.com",
+      ResourceProviderValue: "MICROSOFT.WEB",
+      SubscriptionId: "fcb7d51b-418f-45a9-8418-5c0f17e343c8",
+      TimeGenerated: "2024-11-13T07:23:06.8976481Z",
+    },
+  ];
 
-export default function Login() {
-  const [isOpen, setIsOpen] = useState(false);
-  const pdfExportComponent = useRef(null);
+  // State to hold the transformed data for the pie chart
+  const [chartData, setChartData] = useState([]);
 
-  const toggleSidebar = () => {
-    setIsOpen((prevState) => !prevState);
-  };
+  // Effect hook to transform the raw data into chart-compatible data
+  useEffect(() => {
+    // Count occurrences of each ActivityStatusValue (e.g., Success, Failure)
+    const statusCount = rawData.reduce((acc, curr) => {
+      const status = curr.ActivityStatusValue || "Unknown"; // Default to "Unknown" if not available
+      acc[status] = (acc[status] || 0) + 1;
+      return acc;
+    }, {});
 
-  const exportPDFWithMethod = () => {
-    const element = document.querySelector(".k-grid") || document.body;
-    savePDF(element, { paperSize: "A1" });
-  };
+    // Transform the data to be used by the PieChart and BarChart components
+    const formattedData = Object.keys(statusCount).map(status => ({
+      name: status,
+      value: statusCount[status],
+    }));
 
-  const exportPDFWithComponent = () => {
-    if (pdfExportComponent.current) {
-      pdfExportComponent.current.save();
-    }
-  };
+    setChartData(formattedData);
+  }, [rawData]);
+
+  // Colors for the pie chart slices
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
   return (
-    <div className="login-container">
-      <div className={`sidebar ${isOpen ? 'open' : ''}`}>
-        <div className="sidebar-content">
-          
-          <h2 className="sidebar-header">Welcome</h2>
-          <ul>
-            <li className="sidebar-item">Home</li>
-            <li className="sidebar-item">About</li>
-            <li className="sidebar-item">Services</li>
-            <li className="sidebar-item">Contact</li>
-            <li className="sidebar-item"  onClick={exportPDFWithComponent}>Export pdf</li>
+    <div>
+      <h3>Activity Status Distribution</h3>
 
-          </ul>
-        </div>
-      </div>
+      {/* PieChart Component */}
+      <ResponsiveContainer width="100%" height={400}>
+        <PieChart>
+          <Pie
+            data={chartData}
+            dataKey="value"
+            nameKey="name"
+            outerRadius={150}
+            fill="#8884d8"
+            label
+          >
+            {chartData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip />
+          <Legend />
+        </PieChart>
+      </ResponsiveContainer>
 
-      <div className="content">
-        <button className="sidebar-toggle" onClick={toggleSidebar}>
-          <TfiAlignJustify />
-        </button>
+      {/* BarChart Component */}
+      <ResponsiveContainer width="100%" height={400}>
+        <BarChart data={chartData}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Bar dataKey="value" fill="#8884d8" />
+        </BarChart>
+      </ResponsiveContainer>
 
-        <PDFExport ref={pdfExportComponent} paperSize="A1">
-          <div className="main-content">
-            <PieChart width={345} height={345}>
-              <Pie
-                data={pieData}
-                dataKey="value"
-                nameKey="name"
-                outerRadius={150}
-                fill="#8884d8"
-                label
-              >
-                {pieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={pieColors[index % pieColors.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
+      <ResponsiveContainer width="100%" height={400}>
+        <LineChart data={chartData}>
+          {/* CartesianGrid to add grid lines to the chart */}
+          <CartesianGrid strokeDasharray="3 3" />
 
-            <BarChart width={500} height={300} data={barData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <BarTooltip />
-              <BarLegend />
-              <Bar dataKey="pv" fill="#8884d8" />
-              <Bar dataKey="uv" fill="#82ca9d" />
-            </BarChart>
+          {/* XAxis and YAxis for the axes */}
+          <XAxis dataKey="name" />
+          <YAxis />
 
-            <LineChart width={500} height={300} data={lineData}>
-              <XAxis dataKey="name" />
-              <YAxis />
-              <CartesianGrid strokeDasharray="3 3" />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="value" stroke="#8884d8" />
-            </LineChart>
-          </div>
+          {/* Line to represent the data on the chart */}
+          <Line type="monotone" dataKey="value" stroke="#8884d8" strokeWidth={2} />
 
-          <div className="main-content2">
-            <BarChart width={500} height={300} data={barData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <BarTooltip />
-              <BarLegend />
-              <Bar dataKey="pv" fill="#8884d8" />
-              <Bar dataKey="uv" fill="#82ca9d" />
-            </BarChart>
+          {/* Tooltip to show the value when hovering over the chart */}
+          <Tooltip />
 
-            <CanvasJSChart options={options} />
-          </div>
-        </PDFExport>
-      </div>
+          {/* Legend */}
+          <Legend />
+        </LineChart>
+      </ResponsiveContainer>
+
     </div>
   );
-}
+};
+
+export default PieChartComponent;
+
+
+
 
